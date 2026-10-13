@@ -1001,8 +1001,7 @@ fn paste_special(s: &mut Session, p: &Json) -> Result<Json> {
                                 moved.array = f.array.and_then(|a| Some(RangeRef::new(a.start.offset(dr, dc)?, a.end.offset(dr, dc)?)));
                                 return Some(std::sync::Arc::new(moved));
                             }
-                            let moved =
-                                novagrid_formula::adjust::shift_relative(e, dest.row as i64 - sc.row as i64, dest.col as i64 - sc.col as i64);
+                            let moved = novagrid_formula::adjust::shift_relative(e, dest.row as i64 - sc.row as i64, dest.col as i64 - sc.col as i64);
                             Some(std::sync::Arc::new(Formula::from_expr(moved)))
                         };
                         if link {

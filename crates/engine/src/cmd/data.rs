@@ -1059,11 +1059,9 @@ fn formula_at(f: &str, first: CellRef, at: CellRef) -> String {
         return f.to_string();
     }
     match novagrid_formula::parse(f.trim_start_matches('=')) {
-        Ok(e) => novagrid_formula::print(&novagrid_formula::adjust::shift_relative(
-            e,
-            at.row as i64 - first.row as i64,
-            at.col as i64 - first.col as i64,
-        )),
+        Ok(e) => {
+            novagrid_formula::print(&novagrid_formula::adjust::shift_relative(e, at.row as i64 - first.row as i64, at.col as i64 - first.col as i64))
+        }
         Err(_) => f.to_string(),
     }
 }

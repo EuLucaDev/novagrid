@@ -1024,14 +1024,8 @@ fn shift_table_columns(t: &mut novagrid_model::Table, at: u32, count: u32, inser
                         break name;
                     }
                 };
-                let col = novagrid_model::TableColumn {
-                    name,
-                    totals: Default::default(),
-                    totals_label: None,
-                    formula: None,
-                    unique_name: None,
-                    xml: None,
-                };
+                let col =
+                    novagrid_model::TableColumn { name, totals: Default::default(), totals_label: None, formula: None, unique_name: None, xml: None };
                 t.columns.insert((idx + k).min(t.columns.len()), col);
             }
         }

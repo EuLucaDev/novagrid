@@ -4,9 +4,9 @@
 use std::str::FromStr;
 use std::sync::mpsc::{Receiver, channel};
 
-use novagrid_ui_egui::SheetApp;
 use muda::accelerator::Accelerator;
 use muda::{CheckMenuItem, Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu};
+use novagrid_ui_egui::SheetApp;
 use serde_json::{Value, json};
 
 type Entry = (&'static str, &'static str, Option<&'static str>);

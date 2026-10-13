@@ -103,10 +103,7 @@ pub fn read_chartex(root: &El) -> Option<Chart> {
             categories: cat,
             values: val.unwrap_or_default(),
             // The default colour (the series' theme accent, which the writer spells out) isn't kept.
-            color: s
-                .path(&["spPr", "solidFill"])
-                .and_then(dml_color)
-                .filter(|c| *c != novagrid_model::Color::Theme(4 + (series.len() % 6) as u8, 0)),
+            color: s.path(&["spPr", "solidFill"]).and_then(dml_color).filter(|c| *c != novagrid_model::Color::Theme(4 + (series.len() % 6) as u8, 0)),
             ..Default::default()
         });
     }

@@ -114,7 +114,7 @@ pub fn tool_definitions() -> Vec<Value> {
         tool(
             "execute_command",
             "Execute command",
-            "Run ANY NovaGrid command by id with JSON params — every ribbon/menu action is a command. Find ids and parameter \
+            "Run ANY Nova Grid command by id with JSON params — every ribbon/menu action is a command. Find ids and parameter \
              docs with list_commands. Examples: {\"command\":\"cell.set\",\"params\":{\"cell\":\"B2\",\"input\":\"=SUM(A1:A9)\"}}; \
              {\"command\":\"home.bold\",\"params\":{\"range\":\"A1:C1\"}}; {\"command\":\"sheet.insert\"}; \
              {\"command\":\"data.removeDuplicates\",\"params\":{\"range\":\"A1:C20\"}}. Most commands act on the current selection \
@@ -128,7 +128,7 @@ pub fn tool_definitions() -> Vec<Value> {
         tool(
             "list_commands",
             "List commands",
-            "List NovaGrid commands: id, label, ribbon path, shortcut, a parameter description (`params`) and whether it can run \
+            "List Nova Grid commands: id, label, ribbon path, shortcut, a parameter description (`params`) and whether it can run \
              right now. Use it to discover what execute_command can do (e.g. search \"sort\", \"border\", \"chart\", \"sheet\").",
             obj(json!({"search": string("Case-insensitive substring matched against id, label and ribbon path")}), &[]),
             true,
