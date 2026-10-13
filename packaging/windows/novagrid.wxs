@@ -15,13 +15,13 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package
       Name="NovaGrid"
-      Manufacturer="Learning Machines LLC"
+      Manufacturer="Nova Foods"
       Version="$(var.Version)"
-      UpgradeCode="5511327B-F305-41BE-92D0-EB84944E7C4D"
+      UpgradeCode="CBFDA395-8175-5DBA-AA05-0DFFC4566170"
       Scope="perMachine"
       Compressed="yes"
       Language="1033">
-    <SummaryInformation Description="NovaGrid spreadsheet" Manufacturer="Learning Machines LLC" />
+    <SummaryInformation Description="NovaGrid spreadsheet" Manufacturer="Nova Foods" />
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
          (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
@@ -160,7 +160,7 @@
 
   <Fragment>
     <ComponentGroup Id="NovagridFiles" Directory="INSTALLFOLDER">
-      <Component Id="NovagridApp" Guid="0507D4B6-12FF-4882-84E1-59083E74A4EB">
+      <Component Id="NovagridApp" Guid="A6518CDA-B166-5500-9C60-5C7E58B3183E">
         <File Id="NovagridExe" Source="$(var.BinDir)\novagrid.exe" KeyPath="yes">
           <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="NovaGrid"
               Description="NovaGrid spreadsheet" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
@@ -215,6 +215,9 @@
              uninstall the marker too. MSI root -1 also satisfies ICE43 for this shortcut. -->
         <RegistryValue Root="HKMU" Key="Software\NovaGrid\Installer" Name="DesktopShortcutComponent"
             Value="1" Type="integer" KeyPath="yes" />
+      </Component>
+      <Component Id="NovaFoodsLegalNotice">
+        <File Id="NovaFoodsLegalNoticeFile" Source="$(sys.SOURCEFILEDIR)..\..\NOTICE" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
