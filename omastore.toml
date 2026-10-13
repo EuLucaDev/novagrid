@@ -1,0 +1,11 @@
+kind = "app"
+categories = ["Office"]
+icon = "assets/app-icon/hicolor/256x256/apps/br.com.novafoods.novagrid.png"
+
+[linux.x86_64]
+asset = "novagrid-{version}-linux-x86_64.tar.gz"
+exec = "novagrid-{version}-linux-x86_64/bin/novagrid"
+
+[linux.aarch64]
+asset = "novagrid-{version}-linux-aarch64.tar.gz"
+exec = "novagrid-{version}-linux-aarch64/bin/novagrid"

@@ -1,0 +1,16 @@
+[package]
+name = "novagrid-chart"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "NovaGrid charts: data resolution, layout into toolkit-free primitives, sparklines and a small rasteriser"
+
+[lints]
+workspace = true
+
+[dependencies]
+novagrid-core = { workspace = true }
+novagrid-model = { workspace = true }
+novagrid-calc = { workspace = true }
+novagrid-numfmt = { workspace = true }
+serde = { workspace = true }

@@ -1,0 +1,29 @@
+[package]
+name = "novagrid-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "NovaGrid engine: sessions, commands, history, clipboard, fill, sort, filter"
+
+[lints]
+workspace = true
+
+[dependencies]
+novagrid-core = { workspace = true }
+novagrid-numfmt = { workspace = true }
+novagrid-formula = { workspace = true }
+novagrid-functions = { workspace = true }
+novagrid-model = { workspace = true }
+novagrid-calc = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+novagrid-xlsx = { workspace = true }
+novagrid-chart = { workspace = true }
+novagrid-pdf = { workspace = true }
+image = { workspace = true }
+
+[dev-dependencies]
+novagrid-xlsx = { workspace = true, features = ["test-support"] }
+zip = { workspace = true }

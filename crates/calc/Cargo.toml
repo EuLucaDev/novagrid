@@ -1,0 +1,17 @@
+[package]
+name = "novagrid-calc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "NovaGrid calculation engine: dependency graph, recalculation, evaluator, dynamic arrays"
+
+[lints]
+workspace = true
+
+[dependencies]
+novagrid-core = { workspace = true }
+novagrid-formula = { workspace = true }
+novagrid-functions = { workspace = true }
+novagrid-numfmt = { workspace = true }
+novagrid-model = { workspace = true }
+log = { workspace = true }
