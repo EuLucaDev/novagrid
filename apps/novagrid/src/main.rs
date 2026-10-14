@@ -230,6 +230,8 @@ fn icon() -> Option<egui::IconData> {
 }
 
 fn main() -> eframe::Result<()> {
+    #[cfg(not(target_arch = "wasm32"))]
+    novagrid_ui_egui::live_ui::install_link_handler();
     // First, so the panic hook and every start-up warning are recorded (`logging`).
     let logger = logging::install();
     // Commands catch their panics (`Session::execute`), but the default hook only prints to

@@ -4,6 +4,8 @@
 //! - Comandos que alteram a planilha e entram no desfazer viram [`LiveChange::Op`] com o contexto
 //!   de quem editou (aba e seleção), para que o colega rode o mesmo comando no mesmo lugar.
 //! - Desfazer/refazer viram [`LiveChange::Replace`] (o documento inteiro).
+//! - O desfazer local guarda fotos do documento: quando chega a alteração de um colega, o
+//!   histórico local anterior é descartado, para que desfazer nunca apague o trabalho dele.
 //! - Visão pessoal (aba ativa, zoom, célula ativa, rolagem, modo de exibição) não é conteúdo: fica
 //!   fora da impressão digital e é preservada quando chega um documento novo.
 
@@ -120,11 +122,14 @@ impl Session {
         d.calc = calc;
         d.wb = Arc::new(wb);
         d.revision += 1;
+        d.undo.clear();
+        d.redo.clear();
         Ok(())
     }
 
     /// Roda o comando de um colega no contexto (aba e seleção) em que ele editou. O histórico de
-    /// desfazer local não ganha o passo dele, e a aba e a seleção locais voltam ao que eram.
+    /// desfazer local é descartado (desfazer não pode apagar o passo dele), e a aba e a seleção
+    /// locais voltam ao que eram.
     pub fn live_apply(&mut self, cmd: &str, params: &Json, ctx: &Json) -> Result<()> {
         if !remote_command_allowed(cmd) {
             return Err(err("comando não permitido na colaboração"));
@@ -132,9 +137,9 @@ impl Session {
         let i = self.live_index()?;
         let prev_active = self.active_index();
         self.set_active(i);
-        let (local_sheet, local_sel, undo_len) = {
+        let (local_sheet, local_sel) = {
             let d = self.doc()?;
-            (d.wb.active_sheet, d.selection.clone(), d.undo.len())
+            (d.wb.active_sheet, d.selection.clone())
         };
         let remote_sheet = ctx.get("sheet").and_then(Json::as_u64).map(|s| s as usize);
         let remote_sel: Option<Selection> = ctx.get("selection").and_then(|s| serde_json::from_value(s.clone()).ok());
@@ -151,7 +156,8 @@ impl Session {
         let result = self.execute(cmd, params.clone());
         self.live_applying = false;
         if let Ok(d) = self.doc_mut() {
-            d.undo.truncate(undo_len);
+            d.undo.clear();
+            d.redo.clear();
             if d.wb.active_sheet != local_sheet && local_sheet < d.wb.sheets.len() {
                 Arc::make_mut(&mut d.wb).active_sheet = local_sheet;
             }
@@ -268,6 +274,26 @@ mod tests {
         sync(&mut b, &mut a);
         assert_eq!(a.live_digest().unwrap(), b.live_digest().unwrap());
         assert_eq!(cell(&a, 0, "C3"), cell(&b, 0, "C3"));
+    }
+
+    #[test]
+    fn undo_never_erases_a_colleagues_later_edit() {
+        let (mut a, mut b) = pair();
+        a.execute("cell.set", json!({"cell": "A1", "input": "da Ana"})).unwrap();
+        sync(&mut a, &mut b);
+        b.execute("cell.set", json!({"cell": "B1", "input": "do Bruno"})).unwrap();
+        sync(&mut b, &mut a);
+        // Ana tenta desfazer: o passo dela é anterior ao do Bruno, então não há o que desfazer.
+        let _ = a.execute("edit.undo", json!({}));
+        sync(&mut a, &mut b);
+        assert_eq!(cell(&a, 0, "B1"), cell(&b, 0, "B1"));
+        assert!(cell(&a, 0, "B1").contains("do Bruno"), "o trabalho do Bruno continua");
+        // Depois da alteração do Bruno, a Ana desfaz normalmente o que ela fizer.
+        a.execute("cell.set", json!({"cell": "C1", "input": "nova"})).unwrap();
+        a.execute("edit.undo", json!({})).unwrap();
+        sync(&mut a, &mut b);
+        assert!(cell(&b, 0, "B1").contains("do Bruno") && cell(&b, 0, "C1").is_empty());
+        assert_eq!(a.live_digest().unwrap(), b.live_digest().unwrap());
     }
 
     #[test]
