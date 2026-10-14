@@ -112,7 +112,7 @@ impl Session {
                 s.zoom = prev.zoom;
                 s.view_active = prev.view_active;
                 s.view_top_left = prev.view_top_left;
-                s.view = prev.view.clone();
+                s.view = prev.view;
             }
         }
         let mut calc = Calc::new();
