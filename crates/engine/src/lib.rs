@@ -14,6 +14,7 @@ pub mod display;
 pub mod fill;
 pub mod io;
 pub mod links;
+pub mod live;
 pub mod outline;
 pub mod paper;
 pub mod pivot;
@@ -256,6 +257,11 @@ pub struct Session {
     /// Review › Notes › Show All Notes: every note is displayed. An application display setting
     /// (like Excel's comment indicator option), so it's not saved in the file.
     pub show_all_notes: bool,
+    /// Colaboração (Nova Live): o documento compartilhado (uid), as alterações locais a enviar e
+    /// se o comando em curso veio de um colega (ver `live`).
+    pub live_doc: Option<u64>,
+    pub live_outbox: Vec<live::LiveChange>,
+    live_applying: bool,
 }
 
 impl Session {
@@ -321,6 +327,7 @@ impl Session {
             return Err(EngineError::Disabled(id.to_string(), why));
         }
         let before = self.active().map(|d| (d.uid, d.wb.clone(), d.selection.clone()));
+        let live_ctx = self.active().filter(|d| self.live_doc == Some(d.uid)).map(|d| (d.uid, d.wb.clone(), live::context(d.wb.active_sheet, &d.selection)));
         let params = if params.is_null() { Json::Object(Default::default()) } else { params };
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| (spec.run)(self, &params)));
         let result = match result {
@@ -344,6 +351,12 @@ impl Session {
             if self.journal.len() > 10_000 {
                 self.journal.drain(..5_000);
             }
+        }
+        if result.is_ok()
+            && let Some((uid, wb, ctx)) = live_ctx
+        {
+            let changed = self.docs.iter().find(|d| d.uid == uid).is_some_and(|d| !Arc::ptr_eq(&d.wb, &wb));
+            self.live_record(id, &params, spec.undoable, changed, ctx);
         }
         if spec.undoable
             && let Some((uid, wb, sel)) = before

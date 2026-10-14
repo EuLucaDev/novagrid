@@ -250,7 +250,7 @@ fn main() -> eframe::Result<()> {
             let _ = std::io::Write::write_fmt(&mut std::io::stderr(), format_args!("novagrid: {report}\n"));
         }
     }));
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let args: Vec<String> = std::env::args().skip(1).filter(|arg| !novagrid_ui_egui::live_ui::is_invite_arg(arg)).collect();
     if args.iter().any(|a| a == "--version" || a == "-V") {
         println!("Nova Grid {}", env!("CARGO_PKG_VERSION"));
         return Ok(());
@@ -298,6 +298,7 @@ fn main() -> eframe::Result<()> {
         session.new_workbook();
     }
     let mut app = SheetApp::new(session, services());
+            app.live.pending_join = novagrid_ui_egui::live_ui::launch_invite();
     app.watch_desktop_theme();
     app.after_engine(); // Show warnings from the sample.
     let control_port = control_port;

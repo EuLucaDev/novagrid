@@ -10,6 +10,8 @@ pub mod backstage;
 mod border_preview;
 mod cell_pictures;
 pub mod chartview;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod live_ui;
 pub mod control;
 pub mod credits;
 pub mod dialogs;
@@ -263,6 +265,9 @@ pub struct SheetApp {
     /// holding other text. Once the cut has been pasted, Paste leaves this text alone.
     cut_text: Option<String>,
     pub started: f64,
+    /// Colaboração em tempo real (Nova Live).
+    #[cfg(not(target_arch = "wasm32"))]
+    pub live: live_ui::LiveUi,
 }
 
 impl SheetApp {
@@ -306,6 +311,8 @@ impl SheetApp {
             clipboard_text_at_copy: None,
             cut_text: None,
             started: now_ms(),
+            #[cfg(not(target_arch = "wasm32"))]
+            live: live_ui::LiveUi::default(),
         }
     }
 
@@ -1099,6 +1106,8 @@ impl SheetApp {
             return;
         }
         let t0 = now_ms();
+        #[cfg(not(target_arch = "wasm32"))]
+        live_ui::pump(self, &ctx);
         text_box::before_ui(self, &ctx);
         // The language the widgets translate with this frame (see `i18n::current`).
         i18n::set_current(&ctx, self.ui.language);
@@ -1129,6 +1138,8 @@ impl SheetApp {
             });
         }
         dialogs::show(self, &ctx);
+        #[cfg(not(target_arch = "wasm32"))]
+        live_ui::window(self, &ctx);
         widgets::message_box(self, &ctx);
         widgets::toast(self, &ctx);
         control::issue_screenshots(self, &ctx);

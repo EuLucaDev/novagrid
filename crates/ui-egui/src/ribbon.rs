@@ -129,6 +129,14 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
                 if __k.clicked() {
                     app.open_dialog("commandSearch", json!({}));
                 }
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    let n = app.live.peers.len();
+                    let label = if app.live.active() { format!("Ao vivo · {n}") } else { "Colaborar".to_string() };
+                    if small_button(ui, Icon::Share, &label, "Editar esta planilha ao vivo com outras pessoas", false).clicked() {
+                        app.live.open = true;
+                    }
+                }
                 let share = small_button(ui, Icon::Share, "Share", "Share: export or save a copy", true);
                 egui::Popup::menu(&share).show(|ui| {
                     if ui.button("Export as PDF…").clicked() {
