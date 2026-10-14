@@ -701,6 +701,33 @@ pub fn show(app: &mut SheetApp, ui: &mut egui::Ui) {
         *v = view;
     }
     app.grid.cells_rect = Some(geo.mirror_rect(geo.cells));
+    // Colaboração: o mouse vai como célula + posição dentro dela (vale com qualquer zoom/rolagem).
+    #[cfg(not(target_arch = "wasm32"))]
+    if app.session.live_on_screen() {
+        let (g1, g2, w1, w2) = (geo.clone(), geo.clone(), wb.clone(), wb.clone());
+        app.live.view = Some(crate::live_ui::LiveView::new(
+            geo.mirror_rect(geo.cells),
+            format!("aba:{}", sh.name),
+            move |p| {
+                let Some(sh) = w1.sheet(si) else { return (0.0, 0.0) };
+                let p = g1.mirror_pos(p);
+                let c = g1.cell_at(sh, p);
+                let r = g1.cell_rect(sh, c);
+                let fx = ((p.x - r.left()) / r.width().max(1.0)).clamp(0.0, 0.999);
+                let fy = ((p.y - r.top()) / r.height().max(1.0)).clamp(0.0, 0.999);
+                (f64::from(c.col) + f64::from(fx), f64::from(c.row) + f64::from(fy))
+            },
+            move |x, y| {
+                let Some(sh) = w2.sheet(si) else { return Pos2::ZERO };
+                let c = CellRef {
+                    col: x.max(0.0).floor().min(f64::from(MAX_COLS - 1)) as u32,
+                    row: y.max(0.0).floor().min(f64::from(MAX_ROWS - 1)) as u32,
+                };
+                let r = g2.cell_rect(sh, c);
+                g2.mirror_pos(pos2(r.left() + r.width() * x.fract() as f32, r.top() + r.height() * y.fract() as f32))
+            },
+        ));
+    }
     // The selection outline glides to a new selection. It stays on its cells when Animations is
     // off, when egui's animations are (the headless harness), and while a screenshot is on its way.
     let outline = app.grid.glide.frame(crate::selection_glide::Frame {
