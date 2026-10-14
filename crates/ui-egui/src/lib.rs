@@ -10,8 +10,6 @@ pub mod backstage;
 mod border_preview;
 mod cell_pictures;
 pub mod chartview;
-#[cfg(not(target_arch = "wasm32"))]
-pub mod live_ui;
 pub mod control;
 pub mod credits;
 pub mod dialogs;
@@ -24,6 +22,8 @@ pub mod i18n;
 pub mod icons;
 pub mod keymap;
 pub mod keytips;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod live_ui;
 pub mod outline;
 pub mod panes;
 pub mod paper_view;

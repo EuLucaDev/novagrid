@@ -327,7 +327,8 @@ impl Session {
             return Err(EngineError::Disabled(id.to_string(), why));
         }
         let before = self.active().map(|d| (d.uid, d.wb.clone(), d.selection.clone()));
-        let live_ctx = self.active().filter(|d| self.live_doc == Some(d.uid)).map(|d| (d.uid, d.wb.clone(), live::context(d.wb.active_sheet, &d.selection)));
+        let live_ctx =
+            self.active().filter(|d| self.live_doc == Some(d.uid)).map(|d| (d.uid, d.wb.clone(), live::context(d.wb.active_sheet, &d.selection)));
         let params = if params.is_null() { Json::Object(Default::default()) } else { params };
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| (spec.run)(self, &params)));
         let result = match result {

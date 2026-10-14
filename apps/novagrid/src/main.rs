@@ -298,7 +298,7 @@ fn main() -> eframe::Result<()> {
         session.new_workbook();
     }
     let mut app = SheetApp::new(session, services());
-            app.live.pending_join = novagrid_ui_egui::live_ui::launch_invite();
+    app.live.pending_join = novagrid_ui_egui::live_ui::launch_invite();
     app.watch_desktop_theme();
     app.after_engine(); // Show warnings from the sample.
     let control_port = control_port;
