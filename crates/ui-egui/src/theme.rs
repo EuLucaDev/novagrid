@@ -138,8 +138,107 @@ impl Tokens {
     }
 
     pub fn get(ctx: &egui::Context) -> Tokens {
+        if let Some(kind) = suite_theme(ctx) {
+            return Tokens::for_suite(kind);
+        }
         if ctx.global_style().visuals.dark_mode { Tokens::dark() } else { Tokens::light() }
     }
+
+    /// A Nova Foods suite theme (Nova Photo's fourteen): the theme paints the chrome (window,
+    /// ribbon, menus, fields, text, accent); the sheet itself (cells, gridlines, selection) keeps
+    /// Nova Grid's own colours.
+    pub fn for_suite(kind: nova_themes::ThemeKind) -> Tokens {
+        let p = kind.palette();
+        let base = if kind.is_dark() { Tokens::dark() } else { Tokens::light() };
+        Tokens {
+            dark: kind.is_dark(),
+            window: rgba(p.chrome),
+            ribbon: rgba(p.card),
+            ribbon_border: rgba(p.card_border),
+            text: rgba(p.text),
+            text_dim: rgba(p.text_dim),
+            text_disabled: rgba(p.text_faint),
+            accent: rgba(p.accent),
+            accent_dark: rgba(nova_themes::mix(p.accent, [0, 0, 0, 255], 0.2)),
+            accent_soft: rgba(nova_themes::alpha(p.accent, if kind.is_dark() { 70 } else { 40 })),
+            hover: rgba(p.hover),
+            pressed: rgba(p.pressed),
+            separator: rgba(p.separator),
+            desk: rgba(p.canvas),
+            header_bg: rgba(p.dock),
+            header_text: rgba(p.text_dim),
+            header_line: rgba(p.separator),
+            header_sel_bg: rgba(p.pressed),
+            input_bg: rgba(p.field),
+            input_border: rgba(p.field_border),
+            tab_bar: rgba(p.chrome),
+            tab_active: rgba(p.card),
+            status_bar: rgba(p.chrome),
+            menu_bg: rgba(p.card),
+            shadow: rgba(p.shadow),
+            danger: rgba(p.danger),
+            ..base
+        }
+    }
+}
+
+fn rgba(c: nova_themes::Rgba) -> Color32 {
+    Color32::from_rgba_unmultiplied(c[0], c[1], c[2], c[3])
+}
+
+fn suite_theme_id() -> egui::Id {
+    egui::Id::new("nova-suite-theme")
+}
+
+/// The suite theme in use, if any (set by [`apply_suite`]).
+pub fn suite_theme(ctx: &egui::Context) -> Option<nova_themes::ThemeKind> {
+    ctx.data(|d| d.get_temp::<Option<nova_themes::ThemeKind>>(suite_theme_id())).flatten()
+}
+
+/// Switch between Nova Grid's own Light/Dark (`None`) and a suite theme. Both egui style slots
+/// get the theme's visuals, so the operating system's appearance can't swap it out.
+pub fn apply_suite(ctx: &egui::Context, kind: Option<nova_themes::ThemeKind>, own_dark: bool) {
+    ctx.data_mut(|d| d.insert_temp(suite_theme_id(), kind));
+    let Some(kind) = kind else {
+        apply(ctx, own_dark);
+        return;
+    };
+    let t = Tokens::for_suite(kind);
+    let p = kind.palette();
+    let mut v = if kind.is_dark() { Visuals::dark() } else { Visuals::light() };
+    v.panel_fill = t.window;
+    v.window_fill = t.menu_bg;
+    v.window_stroke = Stroke::new(1.0, t.ribbon_border);
+    v.extreme_bg_color = t.input_bg;
+    v.faint_bg_color = t.ribbon;
+    v.override_text_color = Some(t.text);
+    v.selection.bg_fill = t.accent_soft;
+    v.selection.stroke = Stroke::new(1.0, t.accent);
+    v.hyperlink_color = t.accent;
+    v.warn_fg_color = rgba(p.warning);
+    v.error_fg_color = t.danger;
+    let r = egui::CornerRadius::same(p.radius_sm.clamp(0.0, 16.0) as u8);
+    let w = &mut v.widgets;
+    w.noninteractive.fg_stroke = Stroke::new(1.0, t.text);
+    w.noninteractive.bg_stroke = Stroke::new(1.0, t.separator);
+    w.noninteractive.corner_radius = r;
+    for (wv, bg) in [(&mut w.inactive, Color32::TRANSPARENT), (&mut w.hovered, t.hover), (&mut w.active, t.pressed), (&mut w.open, t.hover)] {
+        wv.weak_bg_fill = bg;
+        wv.fg_stroke = Stroke::new(1.0, t.text);
+        wv.bg_stroke = Stroke::new(1.0, if p.bevel { Color32::from_gray(64) } else { t.input_border });
+        wv.corner_radius = r;
+    }
+    w.inactive.bg_fill = t.input_bg;
+    w.hovered.bg_fill = t.hover;
+    w.active.bg_fill = t.pressed;
+    w.open.bg_fill = t.hover;
+    v.window_corner_radius = egui::CornerRadius::same(p.radius_lg.clamp(0.0, 24.0) as u8);
+    v.menu_corner_radius = egui::CornerRadius::same(p.radius.clamp(0.0, 16.0) as u8);
+    v.popup_shadow = egui::epaint::Shadow { offset: [0, 4], blur: 16, spread: 0, color: t.shadow };
+    for theme in [egui::Theme::Light, egui::Theme::Dark] {
+        ctx.set_visuals_of(theme, v.clone());
+    }
+    ctx.set_theme(if kind.is_dark() { egui::Theme::Dark } else { egui::Theme::Light });
 }
 
 pub const UI: &str = "ui";

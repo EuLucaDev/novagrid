@@ -56,6 +56,9 @@ pub struct UiState {
     /// The manual preference, retained when following the system appearance.
     pub dark: bool,
     pub system_theme: bool,
+    /// A Nova Foods suite theme id (Nova Photo's fourteen, e.g. `"studio"`); `None` uses Nova
+    /// Grid's own Light/Dark/System above.
+    pub theme: Option<String>,
     pub ribbon_tab: String,
     pub ribbon_collapsed: bool,
     pub formula_bar_expanded: bool,
@@ -102,6 +105,7 @@ impl Default for UiState {
         UiState {
             dark: false,
             system_theme: false,
+            theme: None,
             ribbon_tab: "Home".into(),
             ribbon_collapsed: false,
             formula_bar_expanded: false,
@@ -132,8 +136,15 @@ impl UiState {
         clamp_interface_scale(self.interface_scale as f64).unwrap_or(100) as f32 / 100.0
     }
 
+    /// The selected suite theme, if the saved id is one.
+    pub fn suite_theme(&self) -> Option<nova_themes::ThemeKind> {
+        self.theme.as_deref().and_then(nova_themes::ThemeKind::from_name)
+    }
+
     pub fn theme_mode(&self) -> &'static str {
-        if self.system_theme {
+        if let Some(kind) = self.suite_theme() {
+            kind.id()
+        } else if self.system_theme {
             "system"
         } else if self.dark {
             "dark"
@@ -597,16 +608,25 @@ impl SheetApp {
                 let current = if self.ui.system_theme { self.effective_dark } else { self.ui.dark };
                 self.ui.dark = p.get("on").and_then(Json::as_bool).unwrap_or(!current);
                 self.ui.system_theme = false;
+                self.ui.theme = None;
                 Ok(json!({"on": self.ui.dark}))
             }
             "view.theme" => {
-                match p.get("mode").and_then(Json::as_str) {
-                    Some("system") => self.ui.system_theme = true,
+                match p.get("theme").or_else(|| p.get("mode")).and_then(Json::as_str) {
+                    Some("system") => {
+                        self.ui.system_theme = true;
+                        self.ui.theme = None;
+                    }
                     Some(mode @ ("light" | "dark")) => {
                         self.ui.dark = mode == "dark";
                         self.ui.system_theme = false;
+                        self.ui.theme = None;
                     }
-                    _ => return Some(Err("theme mode must be system, light, or dark".into())),
+                    Some(name) => match nova_themes::ThemeKind::from_name(name) {
+                        Some(kind) => self.ui.theme = Some(kind.id().to_string()),
+                        None => return Some(Err(format!("unknown theme {name:?}"))),
+                    },
+                    None => return Some(Err("theme must be system, light, dark or a suite theme id".into())),
                 }
                 Ok(json!({"mode": self.ui.theme_mode()}))
             }
@@ -1041,6 +1061,11 @@ impl SheetApp {
         }
         if let Some(answer) = self.desktop_theme.take_change() {
             self.desktop_dark = Some(answer);
+        }
+        let suite = self.ui.suite_theme();
+        if theme::suite_theme(ctx) != suite {
+            theme::apply_suite(ctx, suite, self.effective_dark);
+            ctx.request_repaint();
         }
         let preference = match (
             self.ui.system_theme,

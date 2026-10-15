@@ -934,14 +934,21 @@ fn options(app: &mut SheetApp, ui: &mut Ui) {
         ui.label(lang.tr("Display theme"));
         let mode = app.ui.theme_mode();
         let current = match mode {
-            "system" => "System",
-            "dark" => "Dark",
-            _ => "Light",
+            "system" => lang.tr("System").to_string(),
+            "dark" => lang.tr("Dark").to_string(),
+            "light" => lang.tr("Light").to_string(),
+            id => nova_themes::ThemeKind::from_name(id).map(|k| k.label().to_string()).unwrap_or_default(),
         };
-        egui::ComboBox::from_id_salt("backstage_theme").width(160.0).selected_text(lang.tr(current)).show_ui(ui, |ui| {
+        egui::ComboBox::from_id_salt("backstage_theme").width(180.0).selected_text(current).show_ui(ui, |ui| {
             for (value, label) in [("system", "System"), ("light", "Light"), ("dark", "Dark")] {
                 if ui.selectable_label(mode == value, lang.tr(label)).clicked() {
                     app.run_or_alert("view.theme", json!({"mode": value}));
+                }
+            }
+            ui.separator();
+            for kind in nova_themes::ThemeKind::ALL {
+                if ui.selectable_label(mode == kind.id(), kind.label()).clicked() {
+                    app.run_or_alert("view.theme", json!({"theme": kind.id()}));
                 }
             }
         });

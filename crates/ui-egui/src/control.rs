@@ -186,7 +186,11 @@ pub fn handle(app: &mut SheetApp, ctx: &egui::Context, method: &str, p: &Json) -
                 ("ui.ribbonTab", "Ribbon Tab", ""),
                 ("view.collapseRibbon", "Collapse Ribbon", ""),
                 ("view.darkMode", "Dark Mode", ""),
-                ("view.theme", "Display Theme", ""),
+                (
+                    "view.theme",
+                    "Display Theme",
+                    "{mode: \"system\"|\"light\"|\"dark\"|<suite theme id: pro, proMedium, proLightGray, proLight, studio, studioLight, classic, solarizedDark, adwaita, adwaitaDark, breezeLight, breezeDark, softDark, softLight>}",
+                ),
                 ("view.animations", "Animations", "{on?: bool} (toggles without it) → {on}"),
                 ("options.autoComplete", "Enable AutoComplete for cell values", "{on?: bool} (toggles without it) → {on}"),
                 ("view.interfaceScale", "Interface Size", "{percent: 75–200 | \"auto\"} (100 = auto; clamped)"),
@@ -222,6 +226,10 @@ pub fn handle(app: &mut SheetApp, ctx: &egui::Context, method: &str, p: &Json) -
             if let Some(v) = p.get("dark").and_then(Json::as_bool) {
                 app.ui.dark = v;
                 app.ui.system_theme = false;
+                app.ui.theme = None;
+            }
+            if let Some(name) = p.get("theme").and_then(Json::as_str) {
+                let _ = app.run("view.theme", json!({"theme": name}));
             }
             if let Some(v) = p.get("formulaBar").and_then(Json::as_bool) {
                 let _ = app.run("view.formulaBar", json!({"on": v}));
