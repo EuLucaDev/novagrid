@@ -131,9 +131,13 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
                 }
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    let n = app.live.peers.len();
-                    let label = if app.live.active() { format!("Ao vivo · {n}") } else { "Colaborar".to_string() };
-                    if small_button(ui, Icon::Share, &label, "Editar esta planilha ao vivo com outras pessoas", false).clicked() {
+                    let people = app
+                        .live
+                        .peers
+                        .iter()
+                        .map(|person| nova_account_ui::Presence { user_id: person.user_id.clone(), name: person.name.clone(), host: person.host })
+                        .collect::<Vec<_>>();
+                    if nova_account_ui::share_button(ui, &people, app.live.active()).clicked() {
                         app.live.open = true;
                     }
                 }

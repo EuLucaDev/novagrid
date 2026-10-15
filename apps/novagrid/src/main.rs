@@ -55,6 +55,10 @@ impl eframe::App for App {
         }
     }
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        #[cfg(not(target_arch = "wasm32"))]
+        if !novagrid_ui_egui::account_ui::gate(ui, "novagrid") {
+            return;
+        }
         self.0.ui(ui);
     }
     fn on_exit(&mut self) {

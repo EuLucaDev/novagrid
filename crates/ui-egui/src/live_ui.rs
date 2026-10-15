@@ -100,6 +100,10 @@ fn toast(app: &mut SheetApp, msg: impl Into<String>) {
 
 /// Começa a compartilhar a planilha ativa.
 pub fn host(app: &mut SheetApp) {
+    if !nova_live::identity::authorized(APP) {
+        app.live.error = Some("Conecte uma conta com acesso a este aplicativo.".into());
+        return;
+    }
     if app.session.live_start().is_err() {
         app.live.error = Some("Abra uma planilha para colaborar.".into());
         return;
@@ -118,8 +122,9 @@ pub fn host(app: &mut SheetApp) {
 
 /// Entra numa planilha compartilhada pelo convite (link do app ou link da página de convite).
 pub fn join(app: &mut SheetApp, text: &str) {
-    if let Some(name) = nova_live::account::name_from_invite(text) {
-        let _ = nova_live::account::save_account_name(&name);
+    if !nova_live::identity::authorized(APP) {
+        app.live.error = Some("Conecte uma conta com acesso a este aplicativo.".into());
+        return;
     }
     let invite = match Invite::parse(text) {
         Ok(i) => i,
@@ -274,25 +279,14 @@ pub fn window(app: &mut SheetApp, ctx: &Context) {
     }
     let mut open = true;
     let mut action: Option<&'static str> = None;
-    egui::Window::new("Colaborar")
+    egui::Window::new("Compartilhar planilha")
         .open(&mut open)
         .collapsible(false)
         .resizable(false)
-        .default_width(420.0)
+        .default_width(400.0)
         .show(ctx, |ui| {
-            match nova_live::account::account_name() {
-                Some(name) => {
-                    ui.label(RichText::new(format!("Você aparece como {name} (conta Nova Foods)")).weak());
-                }
-                None => {
-                    ui.horizontal(|ui| {
-                        ui.label(RichText::new(format!("Você aparece como {}", my_name())).weak());
-                        if ui.link("Usar minha conta Nova Foods").clicked() {
-                            ui.ctx().open_url(egui::OpenUrl::new_tab(nova_live::account::connect_url(APP)));
-                        }
-                    });
-                }
-            }
+            nova_account_ui::account_panel(ui, APP);
+            ui.separator();
             ui.add_space(6.0);
             if let Some(live) = app.live.live.as_ref() {
                 let host = live.role() == Role::Host;
@@ -316,7 +310,7 @@ pub fn window(app: &mut SheetApp, ctx: &Context) {
                 ui.add_space(8.0);
                 ui.label(RichText::new(format!("Na planilha agora ({})", app.live.peers.len())).strong());
                 for p in &app.live.peers {
-                    ui.label(format!("{}{}", p.name, if p.host { " · anfitrião" } else { "" }));
+                    ui.horizontal(|ui| { nova_account_ui::avatar(ui, p.user_id.as_deref(), &p.name, 32.0); ui.label(&p.name); });
                 }
                 ui.add_space(8.0);
                 if host {
