@@ -19,7 +19,7 @@ log = { workspace = true }
 image = { workspace = true }
 skrifa = { workspace = true }
 # Os 14 temas de interface da suíte Nova Foods (os do Nova Photo), em todos os alvos.
-nova-themes = { git = "https://github.com/EuLucaDev/nova-live", rev = "73285eb52d4ebe4e70b8fd2e8ea79a9328638e10" }
+nova-themes = { git = "https://github.com/EuLucaDev/nova-live", rev = "d0c50673eb1b525c3efbfda72e33bdeb4569e1e7" }
 
 # Linux only, where winit reports no system theme: the desktop portal's light/dark answer (see
 # `desktop_theme.rs`). Already in the tree, with these features, through egui's own
@@ -33,9 +33,9 @@ epaint_default_fonts = { workspace = true }
 novagrid-xlsx = { workspace = true, features = ["test-support"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-nova-account-ui = { git = "https://github.com/EuLucaDev/nova-live", rev = "25720ad8a7aa8cc6e10ffd13091bd69873d9fd95" }
+nova-account-ui = { git = "https://github.com/EuLucaDev/nova-live", rev = "d0c50673eb1b525c3efbfda72e33bdeb4569e1e7" }
 # Colaboração em tempo real dos apps Nova Foods (convites, sessão, relay live.agcunae.com).
-nova-live = { git = "https://github.com/EuLucaDev/nova-live", rev = "25720ad8a7aa8cc6e10ffd13091bd69873d9fd95" }
+nova-live = { git = "https://github.com/EuLucaDev/nova-live", rev = "d0c50673eb1b525c3efbfda72e33bdeb4569e1e7" }
 # The desktop's preferred language for the first-run interface language.
 sys-locale = { workspace = true }
 

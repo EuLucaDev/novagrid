@@ -2235,7 +2235,7 @@ dependencies = [
 [[package]]
 name = "nova-account-ui"
 version = "0.1.0"
-source = "git+https://github.com/EuLucaDev/nova-live?rev=25720ad8a7aa8cc6e10ffd13091bd69873d9fd95#25720ad8a7aa8cc6e10ffd13091bd69873d9fd95"
+source = "git+https://github.com/EuLucaDev/nova-live?rev=d0c50673eb1b525c3efbfda72e33bdeb4569e1e7#d0c50673eb1b525c3efbfda72e33bdeb4569e1e7"
 dependencies = [
  "egui",
  "image",
@@ -2245,7 +2245,7 @@ dependencies = [
 [[package]]
 name = "nova-live"
 version = "0.1.0"
-source = "git+https://github.com/EuLucaDev/nova-live?rev=25720ad8a7aa8cc6e10ffd13091bd69873d9fd95#25720ad8a7aa8cc6e10ffd13091bd69873d9fd95"
+source = "git+https://github.com/EuLucaDev/nova-live?rev=d0c50673eb1b525c3efbfda72e33bdeb4569e1e7#d0c50673eb1b525c3efbfda72e33bdeb4569e1e7"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.4.3",
@@ -2262,7 +2262,7 @@ dependencies = [
 [[package]]
 name = "nova-live-macos"
 version = "0.1.0"
-source = "git+https://github.com/EuLucaDev/nova-live?rev=25720ad8a7aa8cc6e10ffd13091bd69873d9fd95#25720ad8a7aa8cc6e10ffd13091bd69873d9fd95"
+source = "git+https://github.com/EuLucaDev/nova-live?rev=d0c50673eb1b525c3efbfda72e33bdeb4569e1e7#d0c50673eb1b525c3efbfda72e33bdeb4569e1e7"
 dependencies = [
  "objc2 0.6.5",
  "objc2-foundation 0.3.2",
@@ -2278,7 +2278,7 @@ dependencies = [
 [[package]]
 name = "nova-themes"
 version = "0.1.0"
-source = "git+https://github.com/EuLucaDev/nova-live?rev=73285eb52d4ebe4e70b8fd2e8ea79a9328638e10#73285eb52d4ebe4e70b8fd2e8ea79a9328638e10"
+source = "git+https://github.com/EuLucaDev/nova-live?rev=d0c50673eb1b525c3efbfda72e33bdeb4569e1e7#d0c50673eb1b525c3efbfda72e33bdeb4569e1e7"
 
 [[package]]
 name = "nova-ui"
@@ -2289,7 +2289,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "arboard",
  "eframe",
@@ -2311,7 +2311,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-calc"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "log",
  "novagrid-core",
@@ -2323,7 +2323,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-chart"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "novagrid-calc",
  "novagrid-core",
@@ -2334,7 +2334,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-cli"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "log",
  "novagrid-engine",
@@ -2346,7 +2346,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-core"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "js-sys",
  "serde",
@@ -2356,7 +2356,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-engine"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "image",
  "log",
@@ -2377,7 +2377,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-formula"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "novagrid-core",
  "serde",
@@ -2386,7 +2386,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-functions"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "novagrid-core",
  "regex",
@@ -2394,7 +2394,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-mcp"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "log",
  "novagrid-engine",
@@ -2403,7 +2403,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-model"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "novagrid-core",
  "novagrid-formula",
@@ -2415,18 +2415,18 @@ dependencies = [
 
 [[package]]
 name = "novagrid-numfmt"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "novagrid-core",
 ]
 
 [[package]]
 name = "novagrid-pdf"
-version = "0.9.1"
+version = "0.10.0"
 
 [[package]]
 name = "novagrid-ui-egui"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "egui",
  "egui_kittest",
@@ -2451,7 +2451,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-web"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "eframe",
  "egui",
@@ -2468,7 +2468,7 @@ dependencies = [
 
 [[package]]
 name = "novagrid-xlsx"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "aes",
  "novagrid-core",
@@ -5068,7 +5068,7 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "novagrid-engine",
  "serde_json",
